@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ذكي AI — استراتيجية التسعير</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brown: #1e0d04;
+      --gold: #c8913a;
+      --gold-light: #e8b96a;
+      --bg: #f7f4ef;
+      --white: #ffffff;
+      --text: #1a0d04;
+      --muted: #7a6050;
+      --border: #e8ddd0;
+      --green: #166534;
+      --green-bg: #f0fdf4;
+      --blue: #1e40af;
+      --blue-bg: #eff6ff;
+      --red: #991b1b;
+      --red-bg: #fef2f2;
+      --yellow-bg: #fffbeb;
+      --yellow: #92400e;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--brown) 0%, #3a1a08 60%, #5c2e10 100%);
+      color: #fff;
+      padding: 60px 40px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(200,145,58,0.15) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(200,145,58,0.2);
+      border: 1px solid rgba(200,145,58,0.4);
+      color: var(--gold-light);
+      padding: 5px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .hero h1 span { color: var(--gold-light); }
+    .hero p {
+      font-size: 1rem;
+      opacity: 0.75;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 36px;
+      position: relative;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 1.8rem; font-weight: 700; color: var(--gold-light); }
+    .hero-stat .lbl { font-size: 12px; opacity: 0.65; margin-top: 2px; }
+
+    /* ── nav ── */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 32px;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .nav-pill {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; text-decoration: none;
+      color: var(--muted); border: 1px solid var(--border);
+      transition: all 0.2s; font-family: 'Tajawal', sans-serif;
+      background: transparent;
+    }
+    .nav-pill:hover { background: var(--bg); color: var(--text); }
+
+    /* ── layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+    /* ── section ── */
+    .section {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      scroll-margin-top: 60px;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--bg);
+    }
+    .section-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--brown), #5c2e10);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .section h2 { font-size: 1.15rem; font-weight: 700; }
+    .section-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ── callout boxes ── */
+    .callout {
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 14px;
+      border-right: 4px solid;
+    }
+    .callout.green  { background: var(--green-bg);  border-color: #4ade80; color: var(--green); }
+    .callout.blue   { background: var(--blue-bg);   border-color: #60a5fa; color: var(--blue); }
+    .callout.yellow { background: var(--yellow-bg); border-color: #fbbf24; color: var(--yellow); }
+    .callout.red    { background: var(--red-bg);    border-color: #f87171; color: var(--red); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── tables ── */
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      background: var(--brown); color: #fff;
+      padding: 11px 14px; text-align: right;
+      font-weight: 600; white-space: nowrap;
+    }
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg); }
+    .price-cell { font-weight: 700; color: var(--green); font-size: 15px; }
+    .cost-cell  { color: var(--red); font-weight: 600; }
+    .margin-cell { font-weight: 700; color: var(--blue); }
+    td.center { text-align: center; }
+
+    /* ── tag badges ── */
+    .tag {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 12px; font-size: 12px; font-weight: 600;
+    }
+    .tag.recommended { background: #fef3c7; color: #92400e; }
+    .tag.high        { background: var(--green-bg); color: var(--green); }
+    .tag.medium      { background: var(--blue-bg); color: var(--blue); }
+    .tag.custom      { background: #f3e8ff; color: #6b21a8; }
+
+    /* ── question cards ── */
+    .q-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .q-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .q-card .q-title {
+      font-size: 12px; font-weight: 700;
+      color: var(--gold); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .q-card ul { list-style: none; }
+    .q-card li { font-size: 13.5px; line-height: 2; }
+    .q-card li::before { content: '← '; color: var(--gold); font-weight: 700; }
+
+    /* ── comparison ── */
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .compare-card {
+      border-radius: 12px; padding: 20px;
+      border: 1.5px solid var(--border);
+    }
+    .compare-card.them { border-color: #fca5a5; background: #fff5f5; }
+    .compare-card.us   { border-color: #86efac; background: #f0fdf4; }
+    .compare-title { font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+    .compare-card.them .compare-title { color: var(--red); }
+    .compare-card.us   .compare-title { color: var(--green); }
+    .compare-list { list-style: none; }
+    .compare-list li { font-size: 13.5px; line-height: 2.1; }
+    .compare-card.them .compare-list li::before { content: '✗ '; color: #ef4444; }
+    .compare-card.us   .compare-list li::before { content: '✓ '; color: #22c55e; }
+
+    /* ── cost breakdown ── */
+    .cost-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .cost-row:last-child { border-bottom: none; }
+    .cost-row .label { color: var(--muted); }
+    .cost-row .value { font-weight: 600; }
+    .cost-row.total { font-weight: 700; font-size: 16px; }
+    .cost-row.total .label { color: var(--text); }
+    .cost-row.total .value { color: var(--green); }
+
+    /* ── margin visual ── */
+    .margin-bar-wrap { margin: 8px 0; }
+    .margin-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .margin-bar { height: 10px; background: #e8ddd0; border-radius: 10px; overflow: hidden; }
+    .margin-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #4ade80, #16a34a); }
+
+    /* ── roadmap steps ── */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gold); color: #fff;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .step-desc  { font-size: 13.5px; color: var(--muted); }
+
+    /* ── key message box ── */
+    .key-message {
+      background: linear-gradient(135deg, var(--brown), #3a1a08);
+      color: #fff;
+      border-radius: 14px;
+      padding: 28px 32px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .key-message h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; color: var(--gold-light); }
+    .key-message p  { opacity: 0.8; font-size: 14px; max-width: 580px; margin: 0 auto; }
+
+    /* ── market example ── */
+    .example-quote {
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 13px;
+      color: #555;
+      font-family: monospace;
+      direction: rtl;
+      margin: 12px 0;
+      white-space: pre-wrap;
+      line-height: 1.8;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 32px 0 20px;
+    }
+
+    @media (max-width: 680px) {
+      .hero h1 { font-size: 1.5rem; }
+      .hero-meta { gap: 20px; }
+      .q-grid, .compare-grid { grid-template-columns: 1fr; }
+      .section { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">وثيقة داخلية — للشركاء فقط</div>
+  <h1>استراتيجية التسعير<br><span>ذكي AI</span></h1>
+  <p>كل ما يحتاجه الشركاء لفهم كيف نسعّر، كيف نحسب تكاليفنا، وكيف نتحدث مع العملاء</p>
+  <div class="hero-meta">
+    <div class="hero-stat">
+      <div class="num">65–80%</div>
+      <div class="lbl">هامش الربح المتوقع</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$80–900</div>
+      <div class="lbl">اشتراك شهري حسب الحجم</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$300–2000+</div>
+      <div class="lbl">رسوم إعداد مرة واحدة</div>
+    </div>
+  </div>
+</div>
+
+<!-- Sticky nav -->
+<nav class="sticky-nav">
+  <a class="nav-pill" href="#sec-market">السوق</a>
+  <a class="nav-pill" href="#sec-discovery">أسئلة العميل</a>
+  <a class="nav-pill" href="#sec-pricing">جدول التسعير</a>
+  <a class="nav-pill" href="#sec-costs">التكاليف والهامش</a>
+  <a class="nav-pill" href="#sec-compare">مقارنة السوق</a>
+  <a class="nav-pill" href="#sec-gtm">كيف نبدأ</a>
+</nav>
+
+<div class="container">
+
+
+  <!-- ═══════ 1. MARKET OPPORTUNITY ═══════ -->
+  <div class="section" id="sec-market">
+    <div class="section-header">
+      <div class="section-icon">🌍</div>
+      <div>
+        <h2>الفرصة في السوق</h2>
+        <div class="section-sub">لماذا الآن، ولماذا نحن</div>
+      </div>
+    </div>
+
+    <p style="font-size:14.5px;color:var(--muted);margin-bottom:16px;">
+      معظم الشركات في المنطقة تعتمد على موظفين بشريين للرد على استفسارات العملاء — وهذا يعني تكاليف ثابتة، أخطاء بشرية، وتوقف في غير أوقات الدوام. الذكاء الاصطناعي يحل هذه المعادلة.
+    </p>
+
+    <div class="callout green">
+      <strong>الفرصة الحقيقية</strong>
+      أي شركة عندها عملاء وأسئلة متكررة — هي عميل محتمل لنا. العيادات، المتاجر، العقارات، التعليم، المطاعم، الخدمات الحكومية.
+    </div>
+
+    <div class="q-grid" style="margin-top:16px;">
+      <div class="q-card">
+        <div class="q-title">✅ عملاء مثاليون</div>
+        <ul>
+          <li>عيادات ومراكز طبية</li>
+          <li>متاجر إلكترونية</li>
+          <li>مراكز تعليمية وأكاديميات</li>
+          <li>مطاعم وسلاسل غذائية</li>
+          <li>شركات عقارية</li>
+          <li>أي شركة لديها 50+ استفسار يومياً</li>
+        </ul>
+      </div>
+      <div class="q-card">
+        <div class="q-title">⚠️ تجنب في البداية</div>
+        <ul>
+          <li>شركات بدون بيانات منظمة أصلاً</li>
+          <li>عملاء يريدون سعراً "رمزياً جداً"</li>
+          <li>مشاريع بدون قرار واضح من الإدارة</li>
+          <li>قطاعات حساسة بدون خبرة فيها</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ 2. DISCOVERY QUESTIONS ═══════ -->
+  <div class="section" id="sec-discovery">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div>
+        <h2>قبل أي تسعير — اسأل هذه الأسئلة</h2>
+        <div class="section-sub">لا تعطِ سعراً قبل أن تعرف هذه الإجابات</div>
+      </div>
+    </div>
+
+    <div class="callout yellow">
+      <strong>قاعدة ذهبية</strong>
+      العميل الذي يسألك "كم السعر؟" في أول دقيقة — لا تجاوبه مباشرة. قل: "يعتمد على احتياجاتك، خليني أفهم وضعك أولاً." ثم اسأل هذه الأسئلة.
+    </div>
+
+    <div class="q-grid" style="margin-top:16px;">
+      <div class="q-card">
+        <div class="q-title">📦 حجم البيانات</div>
+        <ul>
+          <li>كم عدد المنتجات أو الخدمات؟</li>
+          <li>هل البيانات مكتوبة ومنظمة؟</li>
+          <li>أين توجد؟ (ملف، موقع، ورق)</li>
+          <li>هل هناك أسئلة متكررة موثقة؟</li>
+        </ul>
+      </div>
+      <div class="q-card">
+        <div class="q-title">💬 حجم المحادثات</div>
+        <ul>
+          <li>كم استفساراً يومياً تستقبلون؟</li>
+          <li>ما القنوات؟ (واتساب، موقع، إنستغرام)</li>
+          <li>ما أوقات الذروة؟</li>
+          <li>هل هناك موسمية؟ (رمضان، أعياد)</li>
+        </ul>
+      </div>
+      <div class="q-card">
+        <div class="q-title">🛠️ التكامل والتقنية</div>
+        <ul>
+          <li>هل عندهم موقع؟ تطبيق؟ CRM؟</li>
+          <li>هل يحتاجون ربطاً بنظام آخر؟</li>
+          <li>هل عندهم فريق تقني؟</li>
+          <li>أي لغات؟ عربي فقط أم ثنائي؟</li>
+        </ul>
+      </div>
+      <div class="q-card">
+        <div class="q-title">🎯 التوقعات والقرار</div>
+        <ul>
+          <li>ما الهدف من الوكيل؟ (مبيعات؟ دعم؟)</li>
+          <li>من يتخذ القرار النهائي؟</li>
+          <li>ما الميزانية التقريبية؟</li>
+          <li>متى يريدون البدء؟</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;background:var(--bg);border-radius:10px;padding:14px 16px;font-size:13.5px;">
+      <strong>بعد هذه الأسئلة، ستعرف:</strong> هل العميل صغير أم متوسط أم كبير — وكم ساعة عمل يحتاج الإعداد — وتالياً كم تسعّر.
+    </div>
+  </div>
+
+
+  <!-- ═══════ 3. PRICING TABLE ═══════ -->
+  <div class="section" id="sec-pricing">
+    <div class="section-header">
+      <div class="section-icon">💰</div>
+      <div>
+        <h2>جدول التسعير الموصى به</h2>
+        <div class="section-sub">رسوم الإعداد مرة واحدة + اشتراك شهري</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">
+      نموذجنا مبني على <strong>مكوّنين</strong>: رسوم إعداد تُدفع مرة واحدة (تغطي وقت البناء والتخصيص) + اشتراك شهري ثابت (يغطي الاستضافة، تكاليف API، والدعم).
+    </p>
+
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--muted);">أ. رسوم الإعداد (مرة واحدة)</h3>
+    <div class="tbl-wrap" style="margin-bottom:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>حجم العميل</th>
+            <th>أمثلة</th>
+            <th>ما يشمله الإعداد</th>
+            <th>وقت العمل</th>
+            <th>رسوم الإعداد</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>صغير</strong></td>
+            <td style="font-size:12px;color:var(--muted);">مقهى، متجر صغير، عيادة فردية</td>
+            <td style="font-size:12px;">بيانات بسيطة، وكيل واحد، نشر على الموقع</td>
+            <td>8–12 ساعة</td>
+            <td class="price-cell">$300 – $600</td>
+          </tr>
+          <tr>
+            <td><strong>متوسط</strong></td>
+            <td style="font-size:12px;color:var(--muted);">عيادة متعددة، أكاديمية، متجر إلكتروني</td>
+            <td style="font-size:12px;">بيانات متوسطة، تكاملات، تخصيص أعمق</td>
+            <td>15–25 ساعة</td>
+            <td class="price-cell">$700 – $1,500</td>
+          </tr>
+          <tr>
+            <td><strong>كبير</strong></td>
+            <td style="font-size:12px;color:var(--muted);">مستشفى، سلسلة تجارية، جهة حكومية</td>
+            <td style="font-size:12px;">بيانات معقدة، ربط أنظمة، تدريب الفريق</td>
+            <td>30–60+ ساعة</td>
+            <td class="price-cell">$2,000+</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--muted);">ب. الاشتراك الشهري</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>الباقة</th>
+            <th>محادثات/شهر</th>
+            <th>ما تشمل</th>
+            <th>الاشتراك الشهري</th>
+            <th>الاشتراك السنوي</th>
+            <th>مناسب لـ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Starter</strong></td>
+            <td class="center">حتى 500</td>
+            <td style="font-size:12px;">وكيل واحد، داشبورد أساسي</td>
+            <td class="price-cell">$80</td>
+            <td class="price-cell">$800 <span style="font-size:11px;color:var(--muted);">(شهرين مجاناً)</span></td>
+            <td style="font-size:12px;color:var(--muted);">مشاريع صغيرة جداً</td>
+          </tr>
+          <tr style="background:#fffbeb;">
+            <td><strong>Basic ⭐</strong> <span class="tag recommended">الأكثر طلباً</span></td>
+            <td class="center">حتى 2,000</td>
+            <td style="font-size:12px;">وكيل + داشبورد + دعم</td>
+            <td class="price-cell">$150</td>
+            <td class="price-cell">$1,500</td>
+            <td style="font-size:12px;color:var(--muted);">عيادة، مقهى، متجر</td>
+          </tr>
+          <tr>
+            <td><strong>Professional</strong></td>
+            <td class="center">حتى 5,000</td>
+            <td style="font-size:12px;">وكيل + داشبورد + تقارير + دعم أسرع</td>
+            <td class="price-cell">$280</td>
+            <td class="price-cell">$2,800</td>
+            <td style="font-size:12px;color:var(--muted);">متجر إلكتروني، أكاديمية</td>
+          </tr>
+          <tr>
+            <td><strong>Business</strong></td>
+            <td class="center">حتى 12,000</td>
+            <td style="font-size:12px;">كل ما سبق + تكاملات + أولوية دعم</td>
+            <td class="price-cell">$450</td>
+            <td class="price-cell">$4,500</td>
+            <td style="font-size:12px;color:var(--muted);">سلسلة متاجر، مستشفى</td>
+          </tr>
+          <tr>
+            <td><strong>Enterprise 👑</strong></td>
+            <td class="center">غير محدود</td>
+            <td style="font-size:12px;">حل مخصص كامل + SLA + تدريب الفريق</td>
+            <td class="price-cell">$700 – $900+</td>
+            <td class="price-cell">تفاوض</td>
+            <td style="font-size:12px;color:var(--muted);">شركات كبيرة، حكومي</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout blue" style="margin-top:16px;">
+      <strong>حافز الدفع السنوي</strong>
+      قدّم للعميل خيار الدفع السنوي بخصم شهرين (≈16%) — هذا يحسن تدفقك النقدي ويقلل احتمالية الإلغاء المبكر.
+    </div>
+  </div>
+
+
+  <!-- ═══════ 4. COSTS & MARGIN ═══════ -->
+  <div class="section" id="sec-costs">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <h2>التكاليف الحقيقية وهامش الربح</h2>
+        <div class="section-sub">ما يكلفنا كل عميل شهرياً — وماذا يتبقى لنا</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">
+      تكلفتنا الرئيسية هي <strong>Anthropic API</strong> (كل محادثة تكلف بضعة سنتات) + الاستضافة على Railway. كل شيء آخر هو وقتنا.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+
+      <div style="background:var(--bg);border-radius:12px;padding:18px;border:1px solid var(--border);">
+        <div style="font-weight:700;margin-bottom:12px;font-size:14px;">باقة Basic — $150/شهر</div>
+        <div class="cost-row"><span class="label">Anthropic API</span><span class="value cost-cell">~$15–25</span></div>
+        <div class="cost-row"><span class="label">Hosting (Railway)</span><span class="value cost-cell">~$5</span></div>
+        <div class="cost-row"><span class="label">دعم ووقتنا</span><span class="value cost-cell">~$10</span></div>
+        <div class="cost-row total"><span class="label">يتبقى لنا</span><span class="value">~$110–120</span></div>
+        <div class="margin-bar-wrap" style="margin-top:10px;">
+          <div class="margin-bar-label"><span>هامش الربح</span><span style="color:var(--green);font-weight:700;">~75%</span></div>
+          <div class="margin-bar"><div class="margin-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border-radius:12px;padding:18px;border:1px solid var(--border);">
+        <div style="font-weight:700;margin-bottom:12px;font-size:14px;">باقة Professional — $280/شهر</div>
+        <div class="cost-row"><span class="label">Anthropic API</span><span class="value cost-cell">~$40–60</span></div>
+        <div class="cost-row"><span class="label">Hosting</span><span class="value cost-cell">~$8</span></div>
+        <div class="cost-row"><span class="label">دعم ووقتنا</span><span class="value cost-cell">~$15</span></div>
+        <div class="cost-row total"><span class="label">يتبقى لنا</span><span class="value">~$197–217</span></div>
+        <div class="margin-bar-wrap" style="margin-top:10px;">
+          <div class="margin-bar-label"><span>هامش الربح</span><span style="color:var(--green);font-weight:700;">~72%</span></div>
+          <div class="margin-bar"><div class="margin-fill" style="width:72%"></div></div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border-radius:12px;padding:18px;border:1px solid var(--border);">
+        <div style="font-weight:700;margin-bottom:12px;font-size:14px;">باقة Business — $450/شهر</div>
+        <div class="cost-row"><span class="label">Anthropic API</span><span class="value cost-cell">~$80–110</span></div>
+        <div class="cost-row"><span class="label">Hosting</span><span class="value cost-cell">~$15</span></div>
+        <div class="cost-row"><span class="label">دعم ووقتنا</span><span class="value cost-cell">~$25</span></div>
+        <div class="cost-row total"><span class="label">يتبقى لنا</span><span class="value">~$300–330</span></div>
+        <div class="margin-bar-wrap" style="margin-top:10px;">
+          <div class="margin-bar-label"><span>هامش الربح</span><span style="color:var(--green);font-weight:700;">~70%</span></div>
+          <div class="margin-bar"><div class="margin-fill" style="width:70%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout green" style="margin-top:20px;">
+      <strong>الصورة الكبيرة</strong>
+      10 عملاء على باقة Basic = $1,500/شهر صافي تقريباً — مع استمرارية العقد. هذا قبل أي رسوم إعداد جديدة.
+    </div>
+  </div>
+
+
+  <!-- ═══════ 5. MARKET COMPARISON ═══════ -->
+  <div class="section" id="sec-compare">
+    <div class="section-header">
+      <div class="section-icon">🔭</div>
+      <div>
+        <h2>ماذا يفعل المنافسون؟ وأين نختلف؟</h2>
+        <div class="section-sub">تحليل نماذج الأسعار الموجودة في السوق</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">
+      وجدنا في السوق نماذج تسعير مثل هذه من شركات تعمل في نفس المجال:
+    </p>
+
+    <div class="example-quote">| الباقة      | الرسائل  | السعر/شهر |
+|-------------|----------|-----------|
+| Starter     | 1,000    | $50       |
+| Basic ⭐    | 3,000    | $135      |
+| Professional| 5,000    | $200      |
+| Advanced    | 8,000    | $300      |
+| Business    | 12,000   | $420      |
+| Enterprise  | 20,000   | $650      |
+
+— نموذج شركة IDeeps وشركات مشابهة في السوق</div>
+
+    <div class="compare-grid" style="margin-top:16px;">
+      <div class="compare-card them">
+        <div class="compare-title">🏭 المنافسون — نموذجهم</div>
+        <ul class="compare-list">
+          <li>يبيعون "عدد رسائل" كمنتج موحّد</li>
+          <li>نفس المنتج لكل العملاء</li>
+          <li>موجّهون لقطاع واحد (عيادات غالباً)</li>
+          <li>لا تخصيص حقيقي</li>
+          <li>العميل يشعر أنه يشتري "كميات"</li>
+          <li>سهل المقارنة = منافسة على السعر</li>
+        </ul>
+      </div>
+      <div class="compare-card us">
+        <div class="compare-title">🚀 ذكي AI — ميزتنا</div>
+        <ul class="compare-list">
+          <li>وكيل مخصص بشخصية وبيانات العميل</li>
+          <li>نبني لكل عميل بما يناسبه تماماً</li>
+          <li>نعمل مع أي قطاع</li>
+          <li>داشبورد + تحليلات + إجراءات فعلية</li>
+          <li>العميل يشعر أنه يوظّف موظفاً ذكياً</li>
+          <li>صعب المقارنة = نقاش على القيمة</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout yellow" style="margin-top:16px;">
+      <strong>ملاحظة مهمة على تلك النماذج</strong>
+      التسعير بالرسائل يُسلّع المنتج — العميل يبدأ يفكر "هل أنا استهلكت رسائلي؟". نحن نسعّر على القيمة المُقدَّمة (توفير موظف، زيادة مبيعات، رضا العملاء) — وهذا يجعل المحادثة مختلفة تماماً.
+    </div>
+  </div>
+
+
+  <!-- ═══════ 6. GO TO MARKET ═══════ -->
+  <div class="section" id="sec-gtm">
+    <div class="section-header">
+      <div class="section-icon">🚀</div>
+      <div>
+        <h2>كيف نذهب إلى السوق؟</h2>
+        <div class="section-sub">خطة عملية للبدء بدون أخطاء في التسعير</div>
+      </div>
+    </div>
+
+    <div class="callout red">
+      <strong>لا تنشر جدول أسعار على الموقع الآن</strong>
+      نحن في مرحلة اكتشاف — كل عميل مختلف وكل مشروع له تكلفته. الأسعار الثابتة قبل الخبرة تضرنا إما بالتسعير بالأقل أو بخسارة العميل بسعر مرتفع غير مبرر.
+    </div>
+
+    <div class="steps" style="margin-top:20px;">
+      <div class="step">
+        <div class="step-num">١</div>
+        <div>
+          <div class="step-title">اذهب بـ "تواصل معنا للتسعير"</div>
+          <div class="step-desc">الموقع يقول "السعر يعتمد على احتياجاتك — تواصل معنا لتقييم مجاني". هذا يجبر العميل على محادثة، وهناك تبدأ الإقناع.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">٢</div>
+        <div>
+          <div class="step-title">اعرض ديمو مجاني دائماً</div>
+          <div class="step-desc">الديمو الذي بنيناه (وكيل القهوة، وكيل السيارات) هو أقوى أداة مبيعات. لا تشرح — اعرض. العميل يفهم فوراً.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">٣</div>
+        <div>
+          <div class="step-title">اعمل تجربة مجانية للعملاء الأوائل (3–5 عملاء)</div>
+          <div class="step-desc">الهدف ليس المال — الهدف شهادات حقيقية، بيانات تكلفة دقيقة، وفهم ما يتطلبه كل نوع عميل. هذا يبني تسعيرك الحقيقي.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">٤</div>
+        <div>
+          <div class="step-title">بعد 5 عملاء — أطلق جدول أسعار رسمي</div>
+          <div class="step-desc">عندها ستعرف بالضبط كم ساعة يأخذ كل نوع مشروع، وكم تكلفتك الشهرية، وأين تكسب أكثر.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">٥</div>
+        <div>
+          <div class="step-title">ركّز على القيمة لا التقنية</div>
+          <div class="step-desc">لا تقل "وكيل ذكاء اصطناعي". قل "موظف يرد على 200 رسالة يومياً، 24/7، بدون راتب أو إجازات، بأقل من تكلفة موظف واحد".</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="key-message" style="margin-top:24px;">
+      <h3>الجملة التي تُغلق أي صفقة</h3>
+      <p>"موظف استقبال يكلفك 400–600 دولار شهرياً — وهو يعمل 8 ساعات، يأخذ إجازات، وقد يترك. ذكي يعمل 24/7، لا يتعب، ولا يطلب زيادة. والفرق؟ أقل من نصف الراتب."</p>
+    </div>
+  </div>
+
+
+</div>
+
+<footer>
+  وثيقة داخلية — ذكي AI · للشركاء فقط · <span id="date"></span>
+</footer>
+
+<script>
+  document.getElementById('date').textContent = new Date().toLocaleDateString('ar-SA', {year:'numeric',month:'long',day:'numeric'});
+</script>
+
+</body>
+</html>
