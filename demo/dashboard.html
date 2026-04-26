@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بيت القهوة | لوحة الإدارة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brown-dark:  #1e0d04;
+      --brown-mid:   #4a2210;
+      --gold:        #c8913a;
+      --gold-light:  #e8b96a;
+      --bg:          #f5f0e8;
+      --card-bg:     #ffffff;
+      --text:        #2a1008;
+      --text-muted:  #7a6050;
+      --border:      #e8ddd0;
+      --sidebar-w:   240px;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, var(--brown-dark) 0%, #2e1208 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; right: 0;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      padding: 28px 20px 20px;
+      border-bottom: 1px solid rgba(200,145,58,0.2);
+    }
+    .sidebar-logo .shop-icon { font-size: 32px; margin-bottom: 8px; }
+    .sidebar-logo h2 { color: #fff; font-size: 18px; font-weight: 700; }
+    .sidebar-logo span { color: var(--gold); font-size: 12px; }
+
+    .nav-links { padding: 20px 12px; flex: 1; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border-radius: 10px;
+      color: rgba(255,255,255,0.65); font-size: 14px;
+      cursor: pointer; transition: all 0.2s; margin-bottom: 4px;
+      text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(200,145,58,0.15); color: #fff; }
+    .nav-link.active { background: var(--gold); color: #fff; font-weight: 600; }
+    .nav-link .icon { font-size: 18px; width: 24px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(200,145,58,0.2);
+    }
+    .chat-link-btn {
+      display: block; text-align: center;
+      background: rgba(200,145,58,0.15);
+      border: 1px solid rgba(200,145,58,0.4);
+      color: var(--gold); padding: 10px; border-radius: 10px;
+      text-decoration: none; font-size: 13px;
+      transition: background 0.2s;
+    }
+    .chat-link-btn:hover { background: rgba(200,145,58,0.25); }
+
+    /* ── main ── */
+    .main {
+      margin-right: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* top bar */
+    .topbar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h1 { font-size: 20px; font-weight: 700; }
+    .topbar-meta { display: flex; align-items: center; gap: 14px; }
+    .refresh-badge {
+      font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .refresh-dot {
+      width: 8px; height: 8px;
+      background: #4ade80; border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    .tab-pills { display: flex; gap: 4px; }
+    .tab-pill {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; cursor: pointer; border: none;
+      background: var(--bg); color: var(--text-muted);
+      font-family: 'Tajawal', sans-serif;
+      transition: all 0.2s;
+    }
+    .tab-pill.active { background: var(--gold); color: #fff; font-weight: 600; }
+
+    /* content */
+    .content { padding: 24px 28px; flex: 1; }
+
+    /* section */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    .stat-card:nth-child(1) .stat-icon { background: #fef3c7; }
+    .stat-card:nth-child(2) .stat-icon { background: #dbeafe; }
+    .stat-card:nth-child(3) .stat-icon { background: #dcfce7; }
+    .stat-card:nth-child(4) .stat-icon { background: #fce7f3; }
+    .stat-info {}
+    .stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── charts ── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .chart-title {
+      font-size: 14px; font-weight: 600;
+      margin-bottom: 16px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chart-title span { font-size: 16px; }
+    .chart-canvas-wrap { position: relative; height: 200px; }
+
+    /* ── orders table ── */
+    .orders-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .orders-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .orders-header h3 { font-size: 15px; font-weight: 700; }
+    .filter-pills { display: flex; gap: 6px; }
+    .filter-pill {
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 12px; cursor: pointer; border: 1.5px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-family: 'Tajawal', sans-serif; transition: all 0.2s;
+    }
+    .filter-pill.active { border-color: var(--gold); color: var(--gold); font-weight: 600; }
+
+    .orders-table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      padding: 11px 16px; text-align: right;
+      background: #faf6f0; color: var(--text-muted);
+      font-weight: 500; font-size: 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 13px 16px; text-align: right;
+      border-bottom: 1px solid #f5f0e8;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fdf8f2; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge.pending  { background: #fef3c7; color: #92400e; }
+    .badge.confirmed{ background: #dbeafe; color: #1e40af; }
+    .badge.delivered{ background: #dcfce7; color: #166534; }
+    .badge.cancelled{ background: #fee2e2; color: #991b1b; }
+
+    .status-select {
+      padding: 4px 8px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 12px;
+      font-family: 'Tajawal', sans-serif;
+      background: #fdf8f2; cursor: pointer;
+      transition: border-color 0.2s; outline: none;
+    }
+    .status-select:focus { border-color: var(--gold); }
+
+    .order-items { max-width: 200px; }
+    .item-chip {
+      display: inline-block;
+      background: #f5ede0; color: #5c3317;
+      border-radius: 6px; padding: 2px 7px;
+      font-size: 11px; margin: 2px 2px 2px 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── products section ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .product-emoji { font-size: 32px; margin-bottom: 8px; }
+    .product-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .product-price { font-size: 18px; font-weight: 700; color: var(--gold); }
+    .product-unit { font-size: 11px; color: var(--text-muted); }
+    .product-popular {
+      display: inline-block; margin-top: 6px;
+      background: #fef3c7; color: #92400e;
+      font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    }
+
+    /* loading overlay */
+    .loading { opacity: 0.5; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="shop-icon">☕</div>
+    <h2>بيت القهوة</h2>
+    <span>لوحة الإدارة</span>
+  </div>
+  <nav class="nav-links">
+    <a class="nav-link active" onclick="switchSection('overview', this)">
+      <span class="icon">📊</span> نظرة عامة
+    </a>
+    <a class="nav-link" onclick="switchSection('orders', this)">
+      <span class="icon">📦</span> الطلبات
+    </a>
+    <a class="nav-link" onclick="switchSection('products', this)">
+      <span class="icon">🛍️</span> المنتجات
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/demo/index.html" class="chat-link-btn">💬 فتح المحادثة</a>
+    <a href="/demo/inventory.html" class="chat-link-btn" style="margin-top:8px;display:block;">📋 دليل الاختبار</a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <h1 id="pageTitle">نظرة عامة</h1>
+    <div class="topbar-meta">
+      <div class="refresh-badge">
+        <div class="refresh-dot"></div>
+        تحديث تلقائي كل 30 ثانية
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── Overview ── -->
+    <div class="section active" id="sec-overview">
+
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statTotal">—</div>
+            <div class="stat-label">إجمالي الطلبات</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statToday">—</div>
+            <div class="stat-label">طلبات اليوم</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statRevenue">—</div>
+            <div class="stat-label">الإيرادات (دينار)</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statPending">—</div>
+            <div class="stat-label">طلبات قيد الانتظار</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title"><span>📈</span> الطلبات — آخر 7 أيام</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="dailyChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><span>🥇</span> أكثر المنتجات طلباً</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="productsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent orders preview -->
+      <div class="orders-card">
+        <div class="orders-header">
+          <h3>آخر الطلبات</h3>
+          <button class="filter-pill active" onclick="switchSection('orders', document.querySelector('.nav-link:nth-child(2)'))">عرض الكل</button>
+        </div>
+        <div class="orders-table-wrap">
+          <table id="recentTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>العميل</th>
+                <th>الهاتف</th>
+                <th>المنتجات</th>
+                <th>المبلغ</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="recentBody">
+              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد طلبات بعد</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Orders ── -->
+    <div class="section" id="sec-orders">
+      <div class="orders-card">
+        <div class="orders-header">
+          <h3>جميع الطلبات</h3>
+          <div class="filter-pills">
+            <button class="filter-pill active" data-filter="all" onclick="filterOrders('all', this)">الكل</button>
+            <button class="filter-pill" data-filter="pending" onclick="filterOrders('pending', this)">قيد الانتظار</button>
+            <button class="filter-pill" data-filter="confirmed" onclick="filterOrders('confirmed', this)">مؤكدة</button>
+            <button class="filter-pill" data-filter="delivered" onclick="filterOrders('delivered', this)">مسلّمة</button>
+            <button class="filter-pill" data-filter="cancelled" onclick="filterOrders('cancelled', this)">ملغاة</button>
+          </div>
+        </div>
+        <div class="orders-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>العميل</th>
+                <th>الهاتف</th>
+                <th>العنوان</th>
+                <th>المنتجات</th>
+                <th>المبلغ</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+                <th>تحديث</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody">
+              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد طلبات بعد</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Products ── -->
+    <div class="section" id="sec-products">
+      <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  /* ──────── state ──────── */
+  let allOrders = [];
+  let currentFilter = 'all';
+  let dailyChart = null;
+  let productsChart = null;
+
+  const PRODUCT_EMOJIS = {
+    coffee: '☕', dates: '🌴', sweets: '🍪', gift_set: '🎁'
+  };
+
+  /* ──────── section nav ──────── */
+  const titles = { overview: 'نظرة عامة', orders: 'الطلبات', products: 'المنتجات' };
+  function switchSection(name, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('pageTitle').textContent = titles[name];
+  }
+
+  /* ──────── status badge ──────── */
+  const STATUS_AR = { pending: 'قيد الانتظار', confirmed: 'مؤكد', delivered: 'مسلّم', cancelled: 'ملغي' };
+  function badge(status) {
+    return `<span class="badge ${status}">${STATUS_AR[status] || status}</span>`;
+  }
+
+  /* ──────── items chips ──────── */
+  function itemsHtml(items) {
+    return items.map(i =>
+      `<span class="item-chip">${i.name_ar} ×${i.quantity}</span>`
+    ).join('');
+  }
+
+  /* ──────── render orders table ──────── */
+  function renderOrders(orders, bodyId, includeActions) {
+    const body = document.getElementById(bodyId);
+    if (!orders.length) {
+      body.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد طلبات</p></div></td></tr>`;
+      return;
+    }
+    body.innerHTML = orders.map(o => `
+      <tr>
+        <td><strong>#${o.id}</strong></td>
+        <td>${o.customer_name}</td>
+        <td dir="ltr">${o.phone}</td>
+        ${includeActions ? `<td style="max-width:140px;font-size:12px;color:var(--text-muted)">${o.address}</td>` : ''}
+        <td class="order-items">${itemsHtml(o.items)}</td>
+        <td><strong>${o.total_price} د.أ</strong></td>
+        <td>${badge(o.status)}</td>
+        <td style="white-space:nowrap;font-size:12px;color:var(--text-muted)">${o.created_at?.slice(0,16) || ''}</td>
+        ${includeActions ? `
+        <td>
+          <select class="status-select" onchange="updateStatus(${o.id}, this.value)" data-id="${o.id}">
+            <option value="pending"   ${o.status==='pending'   ?'selected':''}>⏳ انتظار</option>
+            <option value="confirmed" ${o.status==='confirmed' ?'selected':''}>✅ مؤكد</option>
+            <option value="delivered" ${o.status==='delivered' ?'selected':''}>🚚 مسلّم</option>
+            <option value="cancelled" ${o.status==='cancelled' ?'selected':''}>❌ ملغي</option>
+          </select>
+        </td>` : ''}
+      </tr>
+    `).join('');
+  }
+
+  /* ──────── filter ──────── */
+  function filterOrders(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const filtered = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+    renderOrders(filtered, 'ordersBody', true);
+  }
+
+  /* ──────── update status ──────── */
+  async function updateStatus(id, status) {
+    try {
+      await fetch(`/api/orders/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      await loadAll();
+    } catch (e) {
+      alert('تعذّر تحديث الحالة');
+    }
+  }
+
+  /* ──────── charts ──────── */
+  function renderDailyChart(data) {
+    const ctx = document.getElementById('dailyChart').getContext('2d');
+
+    // Fill missing days
+    const days = [];
+    const counts = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      days.push(key.slice(5));
+      const found = data.find(r => r.day === key);
+      counts.push(found ? found.count : 0);
+    }
+
+    if (dailyChart) dailyChart.destroy();
+    dailyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: days,
+        datasets: [{
+          label: 'عدد الطلبات',
+          data: counts,
+          backgroundColor: 'rgba(200,145,58,0.75)',
+          borderColor: '#c8913a',
+          borderWidth: 2,
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f0e8d8' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderProductsChart(data) {
+    const ctx = document.getElementById('productsChart').getContext('2d');
+    if (!data.length) return;
+
+    const COLORS = ['#c8913a','#4a90d9','#4ade80','#f472b6','#fb923c'];
+
+    if (productsChart) productsChart.destroy();
+    productsChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.map(d => d.name),
+        datasets: [{
+          data: data.map(d => d.count),
+          backgroundColor: COLORS.slice(0, data.length),
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { family: 'Tajawal', size: 11 }, boxWidth: 12, padding: 10 }
+          }
+        }
+      }
+    });
+  }
+
+  /* ──────── load products ──────── */
+  async function loadProducts() {
+    const res = await fetch('/api/products');
+    const data = await res.json();
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = data.map(p => `
+      <div class="product-card">
+        <div class="product-emoji">${PRODUCT_EMOJIS[p.category] || '📦'}</div>
+        <div class="product-name">${p.name_ar}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${p.name_en}</div>
+        <div class="product-price">${p.price} <span class="product-unit">دينار / ${p.unit}</span></div>
+        ${p.popular ? '<div class="product-popular">⭐ الأكثر مبيعاً</div>' : ''}
+      </div>
+    `).join('');
+  }
+
+  /* ──────── load all data ──────── */
+  async function loadAll() {
+    try {
+      const [statsRes, ordersRes] = await Promise.all([
+        fetch('/api/stats'),
+        fetch('/api/orders'),
+      ]);
+      const stats = await statsRes.json();
+      const orders = await ordersRes.json();
+
+      allOrders = orders;
+
+      // Stats
+      document.getElementById('statTotal').textContent   = stats.total_orders;
+      document.getElementById('statToday').textContent   = stats.today_orders;
+      document.getElementById('statRevenue').textContent = stats.total_revenue.toFixed(2);
+      document.getElementById('statPending').textContent = stats.pending_orders;
+
+      // Charts
+      renderDailyChart(stats.daily_orders || []);
+      if ((stats.top_products || []).length) renderProductsChart(stats.top_products);
+
+      // Recent (last 5)
+      renderOrders(orders.slice(0, 5), 'recentBody', false);
+
+      // Full orders table
+      filterOrders(currentFilter, null);
+
+    } catch (e) {
+      console.error('Load error:', e);
+    }
+  }
+
+  /* ──────── init ──────── */
+  loadAll();
+  loadProducts();
+  setInterval(loadAll, 30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دليل الاختبار — بيت القهوة</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: #f4f0eb;
+      color: #1a0d04;
+      padding: 24px;
+      direction: rtl;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e0d04 0%, #4a2210 100%);
+      color: white;
+      padding: 24px 32px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header .logo { font-size: 40px; flex-shrink: 0; }
+    header h1   { font-size: 1.5rem; font-weight: 700; }
+    header p    { font-size: 0.88rem; opacity: 0.8; margin-top: 4px; }
+    .badge {
+      margin-right: auto;
+      background: #c8913a;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .nav-pills {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .nav-pills a {
+      padding: 7px 16px;
+      background: #fff;
+      border-radius: 20px;
+      text-decoration: none;
+      color: #4a2210;
+      font-size: 0.85rem;
+      border: 1px solid #e0d4c0;
+      transition: background 0.2s;
+    }
+    .nav-pills a:hover { background: #f5e8d0; }
+
+    section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      scroll-margin-top: 16px;
+    }
+    section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0e8d8;
+      color: #4a2210;
+    }
+    .section-note {
+      font-size: 0.82rem;
+      color: #6b5040;
+      background: #fdf5ea;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-right: 3px solid #c8913a;
+      margin-bottom: 14px;
+    }
+
+    /* tables */
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    th {
+      background: #2a1008;
+      color: #fff;
+      padding: 10px 12px;
+      text-align: right;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0e8d8;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fdf8f2; }
+
+    .price { font-weight: 700; color: #1a5e1a; }
+    .na    { color: #ccc; font-size: 0.8rem; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tag-coffee  { background: #fdf0e0; color: #7c4510; }
+    .tag-dates   { background: #e8f5e9; color: #1b5e20; }
+    .tag-sweets  { background: #fce4ec; color: #880e4f; }
+    .tag-gift    { background: #ede7f6; color: #4527a0; }
+    .tag-popular { background: #fff8e1; color: #f57f17; }
+    .tag-free    { background: #e3f2fd; color: #1565c0; }
+    .tag-paid    { background: #fce4ec; color: #880e4f; }
+
+    /* question cards */
+    .q-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .q-card {
+      background: #fdf8f2;
+      border: 1px solid #e8ddd0;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .q-card .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #c8913a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .q-card ul { list-style: none; }
+    .q-card li {
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: #2a1008;
+      cursor: default;
+    }
+    .q-card li::before { content: '💬 '; }
+
+    /* can/cannot */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .can-list, .cannot-list { list-style: none; }
+    .can-list    li { font-size: 0.88rem; line-height: 2.1; }
+    .cannot-list li { font-size: 0.88rem; line-height: 2.1; }
+    .can-list    li::before { content: '✅ '; }
+    .cannot-list li::before { content: '❌ '; }
+
+    /* order flow */
+    .flow-steps {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 140px;
+      background: #fdf8f2;
+      border: 1px solid #e8ddd0;
+      border-radius: 10px;
+      padding: 14px 12px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '←';
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #c8913a;
+      z-index: 1;
+    }
+    .flow-step + .flow-step { margin-right: 16px; }
+    .step-num {
+      width: 28px; height: 28px;
+      background: #c8913a;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .step-title { font-size: 0.85rem; font-weight: 700; color: #2a1008; margin-bottom: 4px; }
+    .step-note  { font-size: 0.75rem; color: #7a6050; line-height: 1.4; }
+
+    /* links */
+    .demo-links {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;
+    }
+    .demo-link {
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .demo-link:hover { opacity: 0.85; }
+    .demo-link.primary { background: #4a2210; color: #fff; }
+    .demo-link.secondary { background: #c8913a; color: #fff; }
+    .demo-link.ghost { background: #f5e8d0; color: #4a2210; border: 1px solid #e0d0b0; }
+
+    footer {
+      text-align: center;
+      color: #b09070;
+      font-size: 0.78rem;
+      padding: 20px 0 8px;
+    }
+
+    @media (max-width: 680px) {
+      .q-grid, .two-col { grid-template-columns: 1fr; }
+      .flow-steps { flex-direction: column; }
+      .flow-step + .flow-step { margin-right: 0; margin-top: 12px; }
+      .flow-step:not(:last-child)::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">☕</div>
+  <div>
+    <h1>دليل الاختبار — بيت القهوة</h1>
+    <p>مرجع داخلي للمختبرين · يعرض كل ما في النظام وكيف تختبره</p>
+  </div>
+  <div class="badge">بيت القهوة · Sales AI</div>
+</header>
+
+<!-- Quick nav -->
+<div class="nav-pills">
+  <a href="#sec-products">١. المنتجات</a>
+  <a href="#sec-questions">٢. أسئلة الاختبار</a>
+  <a href="#sec-order-flow">٣. خطوات الطلب</a>
+  <a href="#sec-scenarios">٤. سيناريوهات</a>
+  <a href="#sec-can">٥. يقدر / ما يقدر</a>
+  <a href="#sec-links">٦. روابط</a>
+</div>
+
+
+<!-- ═══════ 1. PRODUCTS ═══════ -->
+<section id="sec-products">
+  <h2>١. المنتجات المتوفرة (8 منتجات)</h2>
+  <p class="section-note">هذا كل ما في النظام — الوكيل لا يعرف منتجات خارج هذه القائمة.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>الكود</th>
+        <th>الاسم</th>
+        <th>السعر</th>
+        <th>الوحدة</th>
+        <th>الفئة</th>
+        <th>يتناسب مع</th>
+        <th>مميز</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>P001</code></td>
+        <td>
+          <strong>قهوة عربية أصيلة</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Premium Arabic Coffee · 250g</span>
+        </td>
+        <td class="price">22 د.أ</td>
+        <td>250g</td>
+        <td><span class="tag tag-coffee">قهوة</span></td>
+        <td>P004، P006</td>
+        <td><span class="tag tag-popular">⭐ الأكثر مبيعاً</span></td>
+      </tr>
+      <tr>
+        <td><code>P002</code></td>
+        <td>
+          <strong>قهوة الهيل والزعفران</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Cardamom & Saffron Coffee · 250g</span>
+        </td>
+        <td class="price">32 د.أ</td>
+        <td>250g</td>
+        <td><span class="tag tag-coffee">قهوة</span></td>
+        <td>P004، P007</td>
+        <td><span class="tag tag-popular">⭐ الأكثر مبيعاً</span></td>
+      </tr>
+      <tr>
+        <td><code>P003</code></td>
+        <td>
+          <strong>قهوة خليجية غامقة</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Gulf Dark Roast · 250g</span>
+        </td>
+        <td class="price">18 د.أ</td>
+        <td>250g</td>
+        <td><span class="tag tag-coffee">قهوة</span></td>
+        <td>P005، P006</td>
+        <td class="na">—</td>
+      </tr>
+      <tr>
+        <td><code>P004</code></td>
+        <td>
+          <strong>تمر مجدول فاخر</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Premium Medjool Dates · 500g</span>
+        </td>
+        <td class="price">28 د.أ</td>
+        <td>500g</td>
+        <td><span class="tag tag-dates">تمر</span></td>
+        <td>P001، P002</td>
+        <td><span class="tag tag-popular">⭐ الأكثر مبيعاً</span></td>
+      </tr>
+      <tr>
+        <td><code>P005</code></td>
+        <td>
+          <strong>تمر بالشوكولاتة البلجيكية</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Belgian Chocolate Dates · 500g</span>
+        </td>
+        <td class="price">38 د.أ</td>
+        <td>500g</td>
+        <td><span class="tag tag-dates">تمر</span></td>
+        <td>P002، P003</td>
+        <td><span class="tag tag-popular">⭐ الأكثر مبيعاً</span></td>
+      </tr>
+      <tr>
+        <td><code>P006</code></td>
+        <td>
+          <strong>بسكويت الهيل والقهوة</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Cardamom Coffee Cookies · 300g</span>
+        </td>
+        <td class="price">14 د.أ</td>
+        <td>300g</td>
+        <td><span class="tag tag-sweets">حلويات</span></td>
+        <td>P001، P003</td>
+        <td class="na">—</td>
+      </tr>
+      <tr>
+        <td><code>P007</code></td>
+        <td>
+          <strong>معمول بالتمر</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Date Maamoul · 12 قطعة</span>
+        </td>
+        <td class="price">18 د.أ</td>
+        <td>12 قطعة</td>
+        <td><span class="tag tag-sweets">حلويات</span></td>
+        <td>P002، P004</td>
+        <td class="na">—</td>
+      </tr>
+      <tr>
+        <td><code>P008</code></td>
+        <td>
+          <strong>طقم هدية الأصالة</strong><br>
+          <span style="font-size:0.78rem;color:#7a6050;">Heritage Gift Set · طقم كامل</span>
+          <div style="font-size:0.76rem;color:#7a6050;margin-top:3px;">يشمل: P002 + P004 + P007 في صندوق هدية فاخر</div>
+        </td>
+        <td class="price">68 د.أ</td>
+        <td>طقم</td>
+        <td><span class="tag tag-gift">طقم هدية</span></td>
+        <td>—</td>
+        <td><span class="tag tag-popular">⭐ الأكثر مبيعاً</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.78rem;color:#999;margin-top:10px;">
+    التوصيل مجاني للطلبات فوق 50 د.أ · وقت التوصيل: 2–3 أيام عمل · الدفع عند الاستلام متاح
+  </p>
+</section>
+
+
+<!-- ═══════ 2. SAMPLE QUESTIONS ═══════ -->
+<section id="sec-questions">
+  <h2>٢. أسئلة مقترحة للاختبار</h2>
+  <p class="section-note">جرّب هذه الأسئلة بالترتيب أو بشكل عشوائي — الوكيل يجب أن يجيب على كل منها بشكل صحيح.</p>
+
+  <div class="q-grid">
+
+    <div class="q-card">
+      <div class="label">📦 استفسار عن المنتجات</div>
+      <ul>
+        <li>وش عندكم من قهوة؟</li>
+        <li>ما الفرق بين القهوة الأصيلة وقهوة الزعفران؟</li>
+        <li>شو أشهر منتج عندكم؟</li>
+        <li>هل التمر طازج؟</li>
+        <li>وش يشمل طقم الهدية؟</li>
+        <li>عندكم معمول؟</li>
+      </ul>
+    </div>
+
+    <div class="q-card">
+      <div class="label">🎁 سيناريو الهدية</div>
+      <ul>
+        <li>أبي أشتري هدية لأمي — ايش تنصحني؟</li>
+        <li>عندي مناسبة وأبي شي أنيق — وش تقترح؟</li>
+        <li>بدي هدية مناسبة بين 30-40 دينار</li>
+        <li>هل الطقم يجي مغلف كهدية؟</li>
+      </ul>
+    </div>
+
+    <div class="q-card">
+      <div class="label">💰 التردد والسعر</div>
+      <ul>
+        <li>غالي شوي — في شي أرخص؟</li>
+        <li>ليش القهوة بالزعفران أغلى؟</li>
+        <li>يستاهل هالسعر؟</li>
+        <li>بفكر — مش متأكد إذا أطلب</li>
+        <li>لو جربت ومش عاجبني؟</li>
+      </ul>
+    </div>
+
+    <div class="q-card">
+      <div class="label">🚚 التوصيل والطلب</div>
+      <ul>
+        <li>كم يكلف التوصيل؟</li>
+        <li>قديش وقت التوصيل؟</li>
+        <li>بتوصلون لعمّان؟</li>
+        <li>الدفع كاش عند الاستلام؟</li>
+        <li>ممكن أطلب أكثر من منتج؟</li>
+      </ul>
+    </div>
+
+    <div class="q-card">
+      <div class="label">🌐 اختبار اللغة</div>
+      <ul>
+        <li>Do you have Arabic coffee?</li>
+        <li>What's your most popular item?</li>
+        <li>I'd like to order the gift set</li>
+        <li>How long does delivery take?</li>
+      </ul>
+    </div>
+
+    <div class="q-card">
+      <div class="label">🛒 إتمام الطلب (مهم)</div>
+      <ul>
+        <li>تمام، أبي أطلب قهوة الزعفران</li>
+        <li>خذ طلبي: قهوة أصيلة وتمر مجدول</li>
+        <li>أبي طقم الهدية — كيف أكمل الطلب؟</li>
+        <li>I want to order 2 bags of the dark roast</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════ 3. ORDER FLOW ═══════ -->
+<section id="sec-order-flow">
+  <h2>٣. خطوات الطلب — كيف يعمل الوكيل</h2>
+  <p class="section-note">عندما يقول العميل "أبي أطلب"، الوكيل يجمع المعلومات بالترتيب هذا قبل أن يسجّل الطلب.</p>
+
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-num">٥</div>
+      <div class="step-title">تأكيد وتسجيل</div>
+      <div class="step-note">يكرر الطلب ويستخدم place_order — يظهر في الداشبورد فوراً</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">٤</div>
+      <div class="step-title">عنوان التوصيل</div>
+      <div class="step-note">يطلب العنوان التفصيلي</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">٣</div>
+      <div class="step-title">رقم الهاتف</div>
+      <div class="step-note">للتواصل عند التوصيل</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">٢</div>
+      <div class="step-title">الاسم الكامل</div>
+      <div class="step-note">اسم العميل للطلب</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">١</div>
+      <div class="step-title">العميل يؤكد</div>
+      <div class="step-note">"أبي أطلب" أو "تمام خذ الطلب"</div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px 14px;font-size:0.85rem;color:#14532d;">
+    ✅ بعد التسجيل الناجح: يعطي الوكيل رقم الطلب ويشكر العميل — والطلب يظهر في <strong>لوحة الإدارة</strong> فوراً مع اسم العميل وهاتفه وعنوانه والمنتجات والمبلغ.
+  </div>
+</section>
+
+
+<!-- ═══════ 4. SCENARIOS ═══════ -->
+<section id="sec-scenarios">
+  <h2>٤. سيناريوهات اختبار كاملة</h2>
+  <p class="section-note">جرّب كل سيناريو من البداية للنهاية لضمان عمل النظام كاملاً.</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:20%">السيناريو</th>
+        <th>كيف تبدأ</th>
+        <th>ما تتوقعه من الوكيل</th>
+        <th>النتيجة في الداشبورد</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>🎯 طلب مباشر</strong></td>
+        <td>"أبي أطلب قهوة الزعفران وتمر مجدول"</td>
+        <td>يجمع الاسم والهاتف والعنوان ثم يسجل</td>
+        <td>طلب جديد بـ P002 + P004 = 60 د.أ</td>
+      </tr>
+      <tr>
+        <td><strong>🤔 متردد بالسعر</strong></td>
+        <td>"القهوة غالية شوي" أو "مش متأكد"</td>
+        <td>يقنع بالجودة والطازجية واقتراح بديل</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>🎁 طلب هدية</strong></td>
+        <td>"بدي هدية مناسبة لشخص يحب القهوة"</td>
+        <td>يقترح P008 (طقم الهدية) ويشرح محتوياته</td>
+        <td>طلب بـ P008 = 68 د.أ</td>
+      </tr>
+      <tr>
+        <td><strong>🌐 إنجليزي</strong></td>
+        <td>"Hi, I want to order the dark roast coffee"</td>
+        <td>يرد بالإنجليزية ويكمل الطلب بالإنجليزية</td>
+        <td>طلب بـ P003 = 18 د.أ</td>
+      </tr>
+      <tr>
+        <td><strong>📦 طلب متعدد</strong></td>
+        <td>"أبي 2 قهوة أصيلة و1 معمول"</td>
+        <td>يحسب المجموع (22×2 + 18 = 62) وتوصيل مجاني</td>
+        <td>طلب بـ P001×2 + P007×1 = 62 د.أ</td>
+      </tr>
+      <tr>
+        <td><strong>❓ سؤال خارج النطاق</strong></td>
+        <td>"عندكم شاي؟" أو "فيه فرع بدبي؟"</td>
+        <td>يعتذر بأدب ويعيد التركيز على المنتجات المتاحة</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ═══════ 5. CAN / CANNOT ═══════ -->
+<section id="sec-can">
+  <h2>٥. ماذا يعرف الوكيل يجاوب؟</h2>
+  <div class="two-col">
+    <div>
+      <ul class="can-list">
+        <li>أسماء وأسعار ووصف كل المنتجات الـ8</li>
+        <li>الفرق بين المنتجات (لماذا الزعفران أغلى)</li>
+        <li>اقتراح منتجات حسب المناسبة أو الميزانية</li>
+        <li>الرد على التردد والإقناع بشكل طبيعي</li>
+        <li>سياسة التوصيل (مجاني فوق 50 د.أ، 2-3 أيام)</li>
+        <li>الدفع عند الاستلام</li>
+        <li>جمع معلومات الطلب وتسجيله في النظام</li>
+        <li>إعطاء رقم الطلب بعد التسجيل</li>
+        <li>الرد بالعربية والإنجليزية</li>
+        <li>اقتراح توليفات (قهوة + تمر)</li>
+        <li>توضيح محتويات طقم الهدية</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="cannot-list">
+        <li>منتجات غير موجودة في القائمة (شاي، عصير...)</li>
+        <li>تتبع طلب سابق (لا يوجد lookup بالهاتف)</li>
+        <li>إلغاء أو تعديل طلب مسجّل</li>
+        <li>خصومات غير معلنة</li>
+        <li>التوصيل لخارج الأردن</li>
+        <li>صور المنتجات أو الكتالوج المصور</li>
+        <li>معلومات عن الفروع أو المتجر الفعلي</li>
+        <li>الحجز لمواعيد أو فعاليات</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ 6. LINKS ═══════ -->
+<section id="sec-links">
+  <h2>٦. روابط النظام</h2>
+  <div class="demo-links">
+    <a href="/demo/index.html" class="demo-link primary">💬 فتح المحادثة (العميل)</a>
+    <a href="/demo/dashboard.html" class="demo-link secondary">📊 لوحة الإدارة (المالك)</a>
+    <a href="/api/orders" class="demo-link ghost" target="_blank">📋 API: الطلبات (JSON)</a>
+    <a href="/api/stats" class="demo-link ghost" target="_blank">📈 API: الإحصائيات (JSON)</a>
+    <a href="/api/products" class="demo-link ghost" target="_blank">🛍️ API: المنتجات (JSON)</a>
+  </div>
+
+  <div style="margin-top:16px;background:#fdf8f2;border:1px solid #e8ddd0;border-radius:8px;padding:14px 16px;">
+    <div style="font-weight:700;margin-bottom:8px;font-size:0.9rem;">💡 نصائح للعرض التجريبي</div>
+    <ul style="list-style:none;font-size:0.84rem;line-height:2;color:#4a2210;">
+      <li>🖥️ افتح نافذتين جنباً إلى جنب: المحادثة على اليسار، الداشبورد على اليمين</li>
+      <li>🔄 الداشبورد يتحدث تلقائياً كل 30 ثانية — أو اضغط F5 بعد تسجيل الطلب لتظهر فوراً</li>
+      <li>📱 المحادثة تعمل على الجوال — يمكن الاختبار من الهاتف على نفس الشبكة</li>
+      <li>🌐 لو أردت اختبار إنجليزي، ابدأ بـ "Hi" والوكيل يتحول تلقائياً</li>
+      <li>📦 بعد تسجيل الطلب، غيّر حالته في الداشبورد من "انتظار" إلى "مؤكد" أو "مسلّم"</li>
+    </ul>
+  </div>
+</section>
+
+
+<footer>
+  مرجع داخلي للفريق — بيت القهوة · Sales AI Demo
+</footer>
+
+</body>
+</html>
