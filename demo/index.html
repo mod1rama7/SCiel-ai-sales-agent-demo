@@ -250,7 +250,7 @@
         <h1>بيت القهوة</h1>
         <div class="subtitle">
           <span class="online-dot"></span>
-          نور — مستشارة المبيعات
+          ذكي — مساعد المبيعات
         </div>
       </div>
       <a href="/demo/dashboard.html" class="header-link">لوحة الإدارة ←</a>
@@ -389,7 +389,11 @@
       });
       const data = await res.json();
       hideTyping();
-      addBubble(data.reply || 'عذراً، لم أفهم. أعد المحاولة.', 'agent');
+      if (data.error) {
+        addBubble(`⚠️ خطأ في الخادم:\n${data.error}`, 'agent');
+      } else {
+        addBubble(data.reply || 'عذراً، لم أفهم. أعد المحاولة.', 'agent');
+      }
     } catch {
       hideTyping();
       addBubble('عذراً، حدث خطأ في الاتصال. تأكد من تشغيل الخادم.', 'agent');

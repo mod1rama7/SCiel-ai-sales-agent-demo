@@ -46,6 +46,7 @@ def root():
 
 @app.post("/chat")
 def chat(req: ChatRequest):
+    import traceback
     history = _sessions.get(req.session_id, [])
     message = req.message if req.message != "__init__" else "مرحباً"
     try:
@@ -53,7 +54,8 @@ def chat(req: ChatRequest):
         _sessions[req.session_id] = new_history
         return {"reply": reply}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        return {"reply": None, "error": str(e)}
 
 
 @app.get("/api/products")
