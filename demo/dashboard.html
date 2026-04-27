@@ -277,6 +277,98 @@
 
     /* loading overlay */
     .loading { opacity: 0.5; pointer-events: none; }
+
+    /* ── bottom nav (mobile only) ── */
+    .bottom-nav { display: none; }
+
+    /* ══════════════════════════════
+       RESPONSIVE — mobile
+    ══════════════════════════════ */
+    @media (max-width: 768px) {
+      body { display: block; padding-bottom: 68px; }
+
+      /* hide sidebar */
+      .sidebar { display: none; }
+
+      /* main fills full width */
+      .main { margin-right: 0; }
+
+      /* topbar */
+      .topbar { padding: 12px 16px; }
+      .topbar h1 { font-size: 16px; }
+      .refresh-badge .refresh-text { display: none; }
+
+      /* content */
+      .content { padding: 14px; }
+
+      /* stats: 2 columns */
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .stat-card { padding: 14px 12px; gap: 10px; }
+      .stat-icon { width: 40px; height: 40px; font-size: 18px; border-radius: 10px; }
+      .stat-value { font-size: 20px; }
+      .stat-label { font-size: 11px; }
+
+      /* charts: single column */
+      .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .chart-canvas-wrap { height: 170px; }
+
+      /* orders header stacks */
+      .orders-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 14px;
+      }
+      .filter-pills {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        width: 100%;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .filter-pill { white-space: nowrap; flex-shrink: 0; }
+
+      /* table padding */
+      th, td { padding: 9px 10px; font-size: 12px; }
+
+      /* bottom nav */
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--brown-dark);
+        border-top: 1px solid rgba(200,145,58,0.25);
+        z-index: 200;
+        height: 62px;
+      }
+      .bottom-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: rgba(255,255,255,0.45);
+        text-decoration: none;
+        font-size: 10px;
+        font-family: 'Tajawal', sans-serif;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: color 0.2s;
+        padding: 0;
+      }
+      .bottom-nav-item .bn-icon { font-size: 20px; line-height: 1; }
+      .bottom-nav-item.active { color: var(--gold); }
+    }
   </style>
 </head>
 <body>
@@ -314,7 +406,7 @@
     <div class="topbar-meta">
       <div class="refresh-badge">
         <div class="refresh-dot"></div>
-        تحديث تلقائي كل 30 ثانية
+        <span class="refresh-text">تحديث تلقائي كل 30 ثانية</span>
       </div>
     </div>
   </div>
@@ -444,6 +536,22 @@
   </div>
 </main>
 
+<!-- Bottom nav (mobile) -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" id="bn-overview" onclick="switchSection('overview', this, true)">
+    <span class="bn-icon">📊</span><span>عام</span>
+  </button>
+  <button class="bottom-nav-item" id="bn-orders" onclick="switchSection('orders', this, true)">
+    <span class="bn-icon">📦</span><span>الطلبات</span>
+  </button>
+  <button class="bottom-nav-item" id="bn-products" onclick="switchSection('products', this, true)">
+    <span class="bn-icon">🛍️</span><span>المنتجات</span>
+  </button>
+  <a class="bottom-nav-item" href="/demo/index.html">
+    <span class="bn-icon">💬</span><span>المحادثة</span>
+  </a>
+</nav>
+
 <script>
   /* ──────── state ──────── */
   let allOrders = [];
@@ -457,12 +565,25 @@
 
   /* ──────── section nav ──────── */
   const titles = { overview: 'نظرة عامة', orders: 'الطلبات', products: 'المنتجات' };
-  function switchSection(name, el) {
+  const bnIds = { overview: 'bn-overview', orders: 'bn-orders', products: 'bn-products' };
+
+  function switchSection(name, el, fromBottom = false) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('sec-' + name).classList.add('active');
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    if (el) el.classList.add('active');
     document.getElementById('pageTitle').textContent = titles[name];
+
+    // sync sidebar
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    if (!fromBottom && el) el.classList.add('active');
+    if (fromBottom) {
+      const idx = { overview: 0, orders: 1, products: 2 };
+      const links = document.querySelectorAll('.nav-link');
+      if (idx[name] !== undefined) links[idx[name]]?.classList.add('active');
+    }
+
+    // sync bottom nav
+    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+    if (bnIds[name]) document.getElementById(bnIds[name])?.classList.add('active');
   }
 
   /* ──────── status badge ──────── */
